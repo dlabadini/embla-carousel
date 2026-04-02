@@ -15,7 +15,7 @@ export type NodeRectsType = {
   slideRects: NodeRectType[]
 }
 
-type NodesType = {
+export type NodesType = {
   root: HTMLElement
   container: HTMLElement
   slides: HTMLElement[]
@@ -74,16 +74,7 @@ export function NodeHandler(root: HTMLElement): NodeHandlerType {
     return rects
   }
 
-  function createSsrNode(
-    offsetLeft: number,
-    offsetTop: number,
-    offsetWidth: number,
-    offsetHeight: number
-  ): HTMLElement {
-    return <HTMLElement>{ offsetLeft, offsetTop, offsetWidth, offsetHeight }
-  }
-
-  function getBrowserNodes(options: OptionsType): NodesType {
+  function getNodes(options: OptionsType): NodesType {
     const { container: userContainer, slides: userSlides } = options
 
     const containerNode = isString(userContainer)
@@ -97,25 +88,6 @@ export function NodeHandler(root: HTMLElement): NodeHandlerType {
     const slides = <HTMLElement[]>Array.from(slideNodes || container.children)
 
     return { root, container, slides }
-  }
-
-  function getSsrNodes(options: OptionsType): NodesType {
-    const rootSize = 100
-    const root = createSsrNode(0, 0, rootSize, rootSize)
-    const container = root
-    let startOffset = 0
-
-    const slides = options.ssr.map((size) => {
-      const slide = createSsrNode(startOffset, startOffset, size, size)
-      startOffset += size
-      return slide
-    })
-
-    return { root, container, slides }
-  }
-
-  function getNodes(options: OptionsType): NodesType {
-    return root ? getBrowserNodes(options) : getSsrNodes(options)
   }
 
   const self: NodeHandlerType = {
